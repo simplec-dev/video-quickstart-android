@@ -30,6 +30,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ebanx.swipebtn.OnStateChangeListener;
+import com.ebanx.swipebtn.SwipeButton;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.video.CameraCapturer;
@@ -150,6 +152,7 @@ public class VideoInviteActivity extends AppCompatActivity {
     private FloatingActionButton switchCameraActionFab;
     private FloatingActionButton localVideoActionFab;
     private FloatingActionButton muteActionFab;
+    private SwipeButton answerBtn;
     private android.support.v7.app.AlertDialog alertDialog;
     private AudioManager audioManager;
     private String remoteParticipantIdentity;
@@ -174,10 +177,14 @@ public class VideoInviteActivity extends AppCompatActivity {
         localVideoActionFab = (FloatingActionButton) findViewById(R.id.local_video_action_fab);
         muteActionFab = (FloatingActionButton) findViewById(R.id.mute_action_fab);
 
+        answerBtn = (SwipeButton) findViewById(R.id.swipe_btn);
+
         /*
          * Hide the connect button until we successfully register with Twilio Notify
          */
         connectActionFab.hide();
+
+        answerBtn.setVisibility(View.GONE);
 
         /*
          * Enable changing the volume using the up/down keys during a conversation
@@ -323,18 +330,25 @@ public class VideoInviteActivity extends AppCompatActivity {
      * Creates a connect UI dialog to handle notifications
      */
     private void showVideoNotificationConnectDialog(String title, String roomName) {
-        EditText roomEditText = new EditText(this);
-        roomEditText.setText(roomName);
+        //EditText roomEditText = new EditText(this);
+        //roomEditText.setText(roomName);
         // Use the default color instead of the disabled color
-        int currentColor = roomEditText.getCurrentTextColor();
-        roomEditText.setEnabled(false);
-        roomEditText.setTextColor(currentColor);
-        alertDialog = createConnectDialog(title,
-                roomEditText,
-                videoNotificationConnectClickListener(roomEditText),
-                cancelConnectDialogClickListener(),
-                this);
-        alertDialog.show();
+        //int currentColor = roomEditText.getCurrentTextColor();
+        //roomEditText.setEnabled(false);
+        //roomEditText.setTextColor(currentColor);
+        //alertDialog = createConnectDialog(title,
+        //        roomEditText,
+        //        videoNotificationConnectClickListener(roomEditText),
+        //        cancelConnectDialogClickListener(),
+        //        this);
+        //alertDialog.show();
+        answerBtn.setVisibility(View.VISIBLE);
+        answerBtn.setOnStateChangeListener(new OnStateChangeListener() {
+            @Override
+            public void onStateChange(boolean active) {
+                connectToRoom(roomName);
+            }
+        });
     }
 
     @Override
@@ -499,6 +513,8 @@ public class VideoInviteActivity extends AppCompatActivity {
 
         room = Video.connect(this, connectOptionsBuilder.build(), roomListener());
         setDisconnectBehavior();
+
+        answerBtn.setVisibility(View.GONE);
     }
 
     void notify(final String roomName) {

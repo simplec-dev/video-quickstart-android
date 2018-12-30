@@ -1,21 +1,27 @@
-// Follow the steps in https://developers.google.com/mobile/add to generate your own google-services.json file.
 {
   "project_info": {
-    "project_number": "your_project_number",
-    "project_id": "your_project_id"
+    "project_number": "278116694223",
+    "firebase_url": "https://family-portal-dev.firebaseio.com",
+    "project_id": "family-portal-dev",
+    "storage_bucket": "family-portal-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:012345678901:android:0123456789abcef0",
+        "mobilesdk_app_id": "1:278116694223:android:7129b13bea283d10",
         "android_client_info": {
-          "package_name": "com.twilio.video.examples.videoinvite"
+          "package_name": "com.simplec.familyportal.dev"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "278116694223-ichk00ch2mnbu762flkofrp2jmi1en3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "your_current_key"
+          "current_key": "AIzaSyA8-oBxjICwHehSU0hkGwRCbl23JzMsQk0"
         }
       ],
       "services": {
@@ -27,7 +33,95 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278116694223:android:ba1427eaa11b4277",
+        "android_client_info": {
+          "package_name": "com.twilio.video.examples.videoinvite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278116694223-k61ktj1djv9mjqfe6akrr1c0tuh1g4g8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.twilio.video.examples.videoinvite",
+            "certificate_hash": "c39fbe7f946587fbdc941c155209b509c040eb1c"
+          }
+        },
+        {
+          "client_id": "278116694223-ichk00ch2mnbu762flkofrp2jmi1en3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8-oBxjICwHehSU0hkGwRCbl23JzMsQk0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
           "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278116694223-tv7514knq0ou2k7p5vad8lgsoh7m9o7q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278116694223:android:8fe5528108fa08f4",
+        "android_client_info": {
+          "package_name": "com.twilio.voice.quickstart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278116694223-8k8lbr1ofvcgdcv6l8773rps4kn891rq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.twilio.voice.quickstart",
+            "certificate_hash": "c39fbe7f946587fbdc941c155209b509c040eb1c"
+          }
+        },
+        {
+          "client_id": "278116694223-ichk00ch2mnbu762flkofrp2jmi1en3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8-oBxjICwHehSU0hkGwRCbl23JzMsQk0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278116694223-tv7514knq0ou2k7p5vad8lgsoh7m9o7q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
         }
       }
     }

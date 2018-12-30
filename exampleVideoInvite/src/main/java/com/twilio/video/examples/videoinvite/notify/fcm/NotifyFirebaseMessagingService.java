@@ -1,19 +1,24 @@
 package com.twilio.video.examples.videoinvite.notify.fcm;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.R;
+import com.twilio.video.examples.videoinvite.VideoInviteActivity;
 import com.twilio.video.examples.videoinvite.notify.api.model.Invite;
 
 import java.util.Map;
@@ -21,6 +26,8 @@ import java.util.Map;
 public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "NotifyFCMService";
+
+    private static final String VIDEO_CHANNEL = "default";
 
     /*
      * The Twilio Notify message data keys are as follows:
@@ -62,46 +69,89 @@ public class NotifyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Title: " + title);
         Log.d(TAG, "Body: " + body);
 
-        showNotification(title, body, invite.roomName);
-        broadcastVideoNotification(title, invite.roomName);
+        showNotification(title, body, invite);
+        broadcastVideoNotification(title, invite);
     }
 
     /**
      * Create and show a simple notification containing the FCM message.
      */
-    private void showNotification(String title, String body, String roomName) {
+    private void showNotification(String title, String body, Invite invite) {
+        Notification notification = null;
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        int notificationId = (int) System.currentTimeMillis();
+
         Intent intent = new Intent(this, VideoInviteActivity.class);
         intent.setAction(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, title);
-        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
+        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, invite.roomName);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
+        Bundle extras = new Bundle();
+        extras.putString(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, title);
+        extras.putString(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, invite.roomName);
+
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_video_call_white_24dp)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel callInviteChannel = new NotificationChannel(VIDEO_CHANNEL,
+                    "Primary Voice Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            callInviteChannel.setLightColor(Color.GREEN);
+            callInviteChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            notificationManager.createNotificationChannel(callInviteChannel);
 
-        int notificationId = (int) System.currentTimeMillis();
-        notificationManager.notify(notificationId, notificationBuilder.build());
+            notification = buildNotification(invite.fromIdentity + " is calling.", pendingIntent, extras);
+            notificationManager.notify(notificationId, notification);
+        } else {
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_video_call_white_24dp)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent);
+
+
+            notificationManager.notify(notificationId, notificationBuilder.build());
+        }
     }
 
     /*
      * Broadcast the Video Notification to the Activity
      */
-    private void broadcastVideoNotification(String title, String roomName) {
-        Intent intent = new Intent(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
+    private void broadcastVideoNotification(String title, Invite invite) {
+        Intent intent = new Intent(this, VideoInviteActivity.class);
+        intent.setAction(VideoInviteActivity.ACTION_VIDEO_NOTIFICATION);
         intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_TITLE, title);
-        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, roomName);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        intent.putExtra(VideoInviteActivity.VIDEO_NOTIFICATION_ROOM_NAME, invite.roomName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(intent);
+        //LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    /**
+     * Build a notification.
+     *
+     * @param text          the text of the notification
+     * @param pendingIntent the body, pending intent for the notification
+     * @param extras        extras passed with the notification
+     * @return the builder
+     */
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public Notification buildNotification(String text, PendingIntent pendingIntent, Bundle extras) {
+        return new Notification.Builder(getApplicationContext(), VIDEO_CHANNEL)
+                .setSmallIcon(R.drawable.ic_call_end_white_24dp)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(text)
+                .setContentIntent(pendingIntent)
+                .setExtras(extras)
+                .setAutoCancel(true)
+                .build();
     }
 }
